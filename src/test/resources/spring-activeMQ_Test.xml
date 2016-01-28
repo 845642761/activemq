@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd  
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<!-- 测试 -->
+	<bean id="messgeSender" class="org.me.activemq.core.impl.MessageSenderImpl">
+		<property name="jmsTemplate" ref="jmsTemplate" />
+		<property name="topicDestinationName" value="org.me.activemq.test.bean.MsgTest" />
+	</bean>
+
+	<bean id="testMsgListener1" class="org.me.activemq.test.listener.TestMsgListener" />
+	<!-- 测试信息监听 -->
+	<bean id="testMsgListener" class="org.springframework.jms.listener.DefaultMessageListenerContainer" lazy-init="false">
+		<property name="connectionFactory" ref="amqConnectionFactory" />
+		<property name="messageListener" ref="testMsgListener1" />
+		<property name="destination">
+			<bean class="org.apache.activemq.command.ActiveMQTopic">
+				<constructor-arg value="org.me.activemq.test.bean.MsgTest" />
+			</bean>
+		</property>
+	</bean>
+</beans>
